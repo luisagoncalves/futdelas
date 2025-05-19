@@ -1,0 +1,23 @@
+/* For information on how to create your own theme, please see:
+http://ionicframework.com/docs/theming/ */
+ion-card {
+    margin: 32px 16px; 
+    border-radius: 10px;
+}
+body {
+  font-family: 'Poppins', sans-serif;
+}
+ion-title {
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+ion-card-title {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+ion-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+}
+
+

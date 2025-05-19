@@ -1,0 +1,7 @@
+{
+  "name": "futedelas-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
