@@ -5,7 +5,21 @@
     </ion-card-header>
 
     <ion-card-content>
-      <ion-grid>
+      <!-- Estado de carregamento -->
+      <div v-if="loading" class="loading-container">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Carregando dados...</p>
+      </div>
+
+      <!-- Estado de erro -->
+      <div v-else-if="error" class="error-container">
+        <ion-icon :icon="warning" color="danger"></ion-icon>
+        <p>Erro ao carregar a classificação</p>
+        <ion-button @click="fetchStandings">Tentar novamente</ion-button>
+      </div>
+
+      <!-- Conteúdo principal -->
+      <ion-grid v-else>
         <!-- Cabeçalho da tabela -->
         <ion-row class="header-row">
           <ion-col size="5">Equipe</ion-col>
@@ -18,19 +32,24 @@
 
         <!-- Times da tabela -->
         <ion-row
-          v-for="(team, index) in teams"
-          :key="index"
+          v-for="(team, index) in standings"
+          :key="team.id || index"
           :class="index % 2 === 0 ? 'even-row' : 'odd-row'"
         >
           <ion-col size="5" class="ion-align-items-center">
             <div class="position-label" v-if="index < 8">{{ index + 1 }}</div>
-            <div class="team-name">{{ team.name }}</div>
+            <div class="team-name">
+              <ion-thumbnail class="team-logo">
+                <img :src="team.logo || defaultLogo" :alt="team.name" />
+              </ion-thumbnail>
+              {{ team.name }}
+            </div>
           </ion-col>
-          <ion-col size="1" class="ion-text-center">{{ team.j }}</ion-col>
-          <ion-col size="1" class="ion-text-center">{{ team.v }}</ion-col>
-          <ion-col size="1" class="ion-text-center">{{ team.e }}</ion-col>
-          <ion-col size="1" class="ion-text-center">{{ team.d }}</ion-col>
-          <ion-col size="2" class="ion-text-center">{{ team.pts }}</ion-col>
+          <ion-col size="1" class="ion-text-center">{{ team.gamesPlayed }}</ion-col>
+          <ion-col size="1" class="ion-text-center">{{ team.wins }}</ion-col>
+          <ion-col size="1" class="ion-text-center">{{ team.draws }}</ion-col>
+          <ion-col size="1" class="ion-text-center">{{ team.losses }}</ion-col>
+          <ion-col size="2" class="ion-text-center">{{ team.points }}</ion-col>
         </ion-row>
       </ion-grid>
     </ion-card-content>
@@ -38,51 +57,116 @@
 </template>
 
 <script setup>
-const teams = [
-  { name: 'Cruzeiro', j: 10, v: 8, e: 1, d: 1, pts: 25 },
-  { name: 'Ferroviária', j: 10, v: 7, e: 2, d: 1, pts: 23 },
-  { name: 'Palmeiras', j: 10, v: 7, e: 1, d: 2, pts: 22 },
-  { name: 'Corinthians', j: 10, v: 6, e: 2, d: 2, pts: 20 },
-  { name: 'São Paulo', j: 10, v: 6, e: 1, d: 3, pts: 19 },
-  { name: 'Flamengo', j: 10, v: 5, e: 2, d: 3, pts: 17 },
-  { name: 'América-MG', j: 10, v: 5, e: 1, d: 4, pts: 16 },
-  { name: 'Bragantino', j: 10, v: 4, e: 3, d: 3, pts: 15 },
-  { name: 'Bahia', j: 10, v: 4, e: 1, d: 5, pts: 13 },
-  { name: 'Fluminense', j: 10, v: 3, e: 2, d: 5, pts: 11 }
-]
+import { ref, onMounted } from 'vue';
+import { 
+  IonCard, 
+  IonCardHeader, 
+  IonCardTitle, 
+  IonCardContent,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonSpinner,
+  IonIcon,
+  IonButton,
+  IonThumbnail
+} from '@ionic/vue';
+import { warning } from 'ionicons/icons';
+
+// Estados reativos
+const standings = ref([]);
+const loading = ref(true);
+const error = ref(null);
+const defaultLogo = ref('assets/images/default-team-logo.png');
+
+// Função para buscar dados da API
+const fetchStandings = async () => {
+  try {
+    loading.value = true;
+    error.value = null;
+    
+    // Simulação de chamada API - substitua pela sua implementação real
+    const response = await fetch('https://api.example.com/standings');
+    
+    if (!response.ok) {
+      throw new Error('Falha ao carregar dados');
+    }
+    
+    const data = await response.json();
+    standings.value = data.map(team => ({
+      id: team.id,
+      name: team.name,
+      logo: team.logoUrl,
+      gamesPlayed: team.jogos,
+      wins: team.vitorias,
+      draws: team.empates,
+      losses: team.derrotas,
+      points: team.pontos
+    }));
+    
+  } catch (err) {
+    console.error('Erro ao buscar classificação:', err);
+    error.value = err.message || 'Erro desconhecido';
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Busca inicial dos dados
+onMounted(fetchStandings);
 </script>
 
 <style scoped>
 .header-row {
   font-weight: bold;
-  background-color: #1e1e1e;
+  background-color: var(--ion-color-primary);
   color: white;
-  padding: 8px 0;
+  padding: 12px 0;
 }
 
 .even-row {
-  background-color: #2d2d2d;
+  background-color: #f5f5f5;
 }
 
 .odd-row {
-  background-color: #1c1c1c;
+  background-color: #ffffff;
 }
 
 .position-label {
   display: inline-block;
-  background-color: #0ac144;
+  background-color: var(--ion-color-success);
   color: white;
   border-radius: 50%;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   text-align: center;
-  line-height: 22px;
+  line-height: 24px;
   font-size: 12px;
-  margin-right: 6px;
+  margin-right: 8px;
 }
 
 .team-name {
-  display: inline-block;
-  vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.team-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  gap: 12px;
+}
+
+.error-container ion-icon {
+  font-size: 48px;
 }
 </style>

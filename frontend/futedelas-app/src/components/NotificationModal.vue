@@ -1,171 +1,87 @@
 <template>
-    <ion-alert :is-open="isOpen" header="Deseja receber notificações sobre as próximas partidas do campeonato?"
-        :buttons="alertButtons" @didDismiss="handleDismiss" />
+  <ion-alert 
+    :is-open="isOpen" 
+    header="Deseja receber notificações sobre as próximas partidas do campeonato?"
+    :buttons="alertButtons" 
+    @didDismiss="handleDismiss" 
+  />
 </template>
 
 <script setup lang="ts">
 import { IonAlert } from '@ionic/vue';
 import { ref, defineProps, defineEmits, onMounted } from 'vue';
-import { LocalNotifications } from '@capacitor/local-notifications';
-import { PushNotifications, Token, PushNotificationSchema } from '@capacitor/push-notifications';
+import { useNotificationService } from '@/services/notificationService';
 
-// Tipos para as props e emisões
+// Tipos TypeScript
 interface Props {
-    isOpen: boolean;
+  isOpen: boolean;
 }
 
 interface Emits {
-    (e: 'update:isOpen', value: boolean): void;
-    (e: 'confirm'): void;
-    (e: 'notification-permission', granted: boolean): void;
-    (e: 'notification-error', error: Error): void;
+  (e: 'update:isOpen', value: boolean): void;
+  (e: 'notification-status', status: NotificationStatus): void;
 }
+
+type NotificationStatus = {
+  granted: boolean;
+  type?: 'push' | 'local' | 'browser';
+  token?: string;
+  error?: Error;
+};
 
 const props = defineProps<Props>();
 const emits = defineEmits<Emits>();
 
+// Serviço de notificação centralizado
+const notificationService = useNotificationService();
+
 const alertButtons = [
-    {
-        text: 'Cancelar',
-        role: 'cancel'
-    },
-    {
-        text: 'Confirmar',
-        role: 'confirm',
-        handler: async () => {
-            try {
-                await requestNotificationPermission();
-                emits('confirm');
-            } catch (error) {
-                emits('notification-error', error as Error);
-            }
-        }
+  {
+    text: 'Cancelar',
+    role: 'cancel'
+  },
+  {
+    text: 'Confirmar',
+    role: 'confirm',
+    handler: async () => {
+      const result = await notificationService.requestPermission();
+      emits('notification-status', result);
+      
+      if (result.granted) {
+        await registerDeviceIfNeeded(result);
+      }
     }
+  }
 ];
 
 const handleDismiss = () => {
-    emits('update:isOpen', false);
+  emits('update:isOpen', false);
 };
 
-// Verifica se está no navegador
-const isBrowser = typeof window !== 'undefined';
-
-// Verifica se as APIs de notificação estão disponíveis
-const areNotificationsAvailable = isBrowser && ('Notification' in window);
-
-// Verifica se é um dispositivo móvel com Capacitor
-const isCapacitor = () => {
-    return isBrowser && (window as any).Capacitor !== undefined;
-};
-
-// Solicita permissão para notificações
-const requestNotificationPermission = async (): Promise<boolean> => {
-    if (isCapacitor()) {
-        // Configura notificações push para dispositivos móveis
-        try {
-            // Solicita permissão
-            const status = await PushNotifications.requestPermissions();
-
-            if (status.receive === 'granted') {
-                await PushNotifications.register();
-                setupPushListeners();
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error('Erro ao configurar push notifications:', error);
-            throw error;
-        }
-    } else if (areNotificationsAvailable) {
-        // Para navegadores
-        const permission = await Notification.requestPermission();
-        const granted = permission === 'granted';
-        emits('notification-permission', granted);
-        return granted;
-    }
-
-    return false;
-};
-
-// Configura listeners para push notifications (apenas mobile)
-const setupPushListeners = () => {
-    PushNotifications.addListener('registration', (token: Token) => {
-        console.log('Push registration success, token:', token.value);
-        // Aqui você enviaria o token para seu servidor
-    });
-
-    PushNotifications.addListener('registrationError', (error: any) => {
-        console.error('Push registration error:', error);
-        emits('notification-error', new Error('Falha no registro de push notifications'));
-    });
-
-    PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
-        console.log('Push received:', notification);
-    });
-
-    PushNotifications.addListener('pushNotificationActionPerformed', (notification: any) => {
-        console.log('Push action performed:', notification);
-    });
-};
-
-// Agenda uma notificação local (usando Capacitor ou API do navegador)
-const scheduleLocalNotification = async (title: string, body: string, scheduleAt: Date) => {
-    if (isCapacitor()) {
-        await LocalNotifications.schedule({
-            notifications: [
-                {
-                    title: title,
-                    body: body,
-                    id: new Date().getTime(),
-                    schedule: { at: scheduleAt },
-                    sound: 'default',
-                    attachments: [],
-                    actionTypeId: '',
-                    extra: null
-                }
-            ]
-        });
-    } else if (areNotificationsAvailable && Notification.permission === 'granted') {
-        // Fallback para navegadores
-        const now = new Date();
-        const timeUntilNotification = scheduleAt.getTime() - now.getTime();
-
-        if (timeUntilNotification > 0) {
-            setTimeout(() => {
-                new Notification(title, { body });
-            }, timeUntilNotification);
-        }
-    }
-};
-
-// Exemplo: Agendar notificação para próxima partida
-const scheduleNextMatchNotification = async (matchDetails: { time: Date; teamA: string; teamB: string }) => {
-    const title = `Partida ${matchDetails.teamA} vs ${matchDetails.teamB}`;
-    const body = `A partida começa em 30 minutos!`;
-
-    // Agenda 30 minutos antes da partida
-    const notificationTime = new Date(matchDetails.time.getTime() - 30 * 60000);
-
+/**
+ * Registra o dispositivo no backend se for push notification
+ */
+const registerDeviceIfNeeded = async (status: NotificationStatus) => {
+  if (status.type === 'push' && status.token) {
     try {
-        await scheduleLocalNotification(title, body, notificationTime);
+      await notificationService.registerDevice({
+        token: status.token,
+        platform: notificationService.getPlatform(),
+        userId: 'current-user-id' // Substituir pelo ID real
+      });
     } catch (error) {
-        console.error('Erro ao agendar notificação:', error);
-        emits('notification-error', error as Error);
+      emits('notification-status', {
+        granted: false,
+        error: error as Error
+      });
     }
+  }
 };
 
-// Expõe métodos para o componente pai
+// Expõe métodos do serviço para o componente pai
 defineExpose({
-    requestNotificationPermission,
-    scheduleLocalNotification,
-    scheduleNextMatchNotification
-});
-
-// Inicialização
-onMounted(() => {
-    if (isCapacitor()) {
-        // Configura local notifications
-        LocalNotifications.requestPermissions();
-    }
+  scheduleNotification: notificationService.schedule,
+  cancelNotification: notificationService.cancel,
+  requestPermission: notificationService.requestPermission
 });
 </script>

@@ -1,15 +1,15 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-import TabsPage from '../views/TabsPage.vue'
+import SegmentView from '../views/SegmentView.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/tabs'
+    redirect: '/segments'
   },
   {
-    path: '/tabs',
-    component: TabsPage
+    path: '/segments',
+    component: SegmentView
   }
 ]
 
