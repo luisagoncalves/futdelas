@@ -1,25 +1,13 @@
 package org.ifb.tcc.futdelas.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Edicao {
-    private int id_edicao;
+    @JsonProperty("id_edicao")
+    private int idEdicao;
     private String temporada;
     private String nome;
-    private String nome_popular;
+    @JsonProperty("nome_popular")
+    private String nomePopular;
     private String slug;
-
-    public int getIdEdicao() {
-        return id_edicao;
-    }
-    public String getTemporada() {
-        return temporada;
-    }
-    public String getNome() {
-        return nome;
-    }
-    public String getNomePopular() {
-        return nome_popular;
-    }
-    public String getSlug() {
-        return slug;
-    }
 }

@@ -1,21 +1,11 @@
 package org.ifb.tcc.futdelas.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Fase {
-    private int fase_id;
+    @JsonProperty("fase_id")
+    private Integer faseId;
     private String nome;
     private String slug;
     private String tipo;
-
-    public int getFaseId(){
-        return fase_id;
-    }
-    public String getNome(){
-        return nome;
-    }
-    public String getSlug(){
-        return slug;
-    }
-    public String getTipo(){
-        return tipo;
-    }
 }

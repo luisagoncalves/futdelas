@@ -8,16 +8,22 @@ import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.ifb.tcc.futdelas.dtos.CampeonatoResponse;
 import org.ifb.tcc.futdelas.dtos.ClassificacaoResponse;
+import org.ifb.tcc.futdelas.dtos.PartidaResponse;
+import java.util.List;
 
 @RegisterRestClient(baseUri = "https://api.api-futebol.com.br/v1")
 @Path("/campeonatos")
 @Produces(MediaType.APPLICATION_JSON)
 public interface ApiFutebolClient {
     @GET
-    @Path("/14")
+    @Path("/30")
     CampeonatoResponse buscarCampeonatoPorId(@HeaderParam("Authorization") String token);
-    
+
     @GET
-    @Path("/14/tabela")
-    ClassificacaoResponse buscarClassificacaoPorCampeonatoId(@HeaderParam("Authorization") String token);
+    @Path("/30/tabela")
+    List<ClassificacaoResponse> buscarClassificacaoPorCampeonatoId(@HeaderParam("Authorization") String token);
+
+    @GET
+    @Path("/30/partidas")
+    PartidaResponse buscarPartidasPorCampeonatoId(@HeaderParam("Authorization") String token);
 }

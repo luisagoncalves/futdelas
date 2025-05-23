@@ -5,11 +5,10 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.ifb.tcc.futdelas.client.ApiFutebolClient;
-import org.ifb.tcc.futdelas.dtos.ClassificacaoResponse;
-import java.util.List;
+import org.ifb.tcc.futdelas.dtos.PartidaResponse;
 
 @ApplicationScoped
-public class ClassificacaoService {
+public class PartidaService {
 
     @Inject
     @RestClient
@@ -18,8 +17,8 @@ public class ClassificacaoService {
     @ConfigProperty(name = "api-futebol.token")
     String token;
 
-    public List<ClassificacaoResponse> buscarClassificacao() {
+    public PartidaResponse buscarPartidas() {
         String authorizationHeader = "Bearer " + token;
-        return apiFutebolClient.buscarClassificacaoPorCampeonatoId(authorizationHeader);
+        return apiFutebolClient.buscarPartidasPorCampeonatoId(authorizationHeader);
     }
 }

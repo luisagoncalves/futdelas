@@ -1,0 +1,23 @@
+package org.ifb.tcc.futdelas.entities;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.ifb.tcc.futdelas.entities.Time;
+
+public class Partida {
+        @JsonProperty("partida_id")
+        private Long partidaId;
+        @JsonProperty("time_mandante")
+        private Time timeMandante;
+        @JsonProperty("time_visitante")
+        private Time timeVisitante;
+        private String status;
+        private String slug;
+        @JsonProperty("data_realizacao")
+        private String dataRealizacao;
+        @JsonProperty("hora_realizacao")
+        private String horaRealizacao;
+        @JsonProperty("data_realizacao_iso")
+        private String dataRealizacaoIso;
+        @JsonProperty("_link")
+        private String link;
+    }
