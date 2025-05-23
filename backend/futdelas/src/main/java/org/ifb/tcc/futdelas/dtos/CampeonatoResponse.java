@@ -5,6 +5,11 @@ import org.ifb.tcc.futdelas.entities.Fase;
 import org.ifb.tcc.futdelas.entities.Rodada;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class CampeonatoResponse {
     public String nome;
     public String slug;

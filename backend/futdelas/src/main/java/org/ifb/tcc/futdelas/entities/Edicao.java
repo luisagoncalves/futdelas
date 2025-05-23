@@ -2,6 +2,9 @@ package org.ifb.tcc.futdelas.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.Data;
+
+@Data
 public class Edicao {
     @JsonProperty("id_edicao")
     private int idEdicao;

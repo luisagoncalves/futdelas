@@ -1,9 +1,10 @@
 package org.ifb.tcc.futdelas.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
+@Data
 public class Time {
-
     @JsonProperty("time_id")
     private Integer timeId;
     @JsonProperty("nome_popular")

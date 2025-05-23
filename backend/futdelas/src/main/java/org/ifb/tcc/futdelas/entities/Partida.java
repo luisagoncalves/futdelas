@@ -1,8 +1,9 @@
 package org.ifb.tcc.futdelas.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.ifb.tcc.futdelas.entities.Time;
+import lombok.Data;
 
+@Data
 public class Partida {
         @JsonProperty("partida_id")
         private Long partidaId;
