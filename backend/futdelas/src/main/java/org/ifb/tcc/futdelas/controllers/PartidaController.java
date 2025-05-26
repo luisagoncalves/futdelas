@@ -9,7 +9,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("/classificacao")
+@Path("/partida")
 @Produces(MediaType.APPLICATION_JSON)
 public class PartidaController {
 
@@ -17,7 +17,6 @@ public class PartidaController {
     PartidaService service;
 
     @GET
-    @Path("/partidas")
     public PartidaResponse buscarPartidas() {
         return service.buscarPartidas();
     }

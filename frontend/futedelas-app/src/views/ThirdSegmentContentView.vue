@@ -1,28 +1,39 @@
 <template>
   <ion-segment-content id="third">
     <TeamCard 
-      :team-name="team.name" 
-      :team-logo="team.logo" 
+      v-for="team in teams"
+      :key="team.time_id"
+      :team-name="team.nome_popular" 
+      :team-logo="team.escudo" 
       :is-initially-favorite="team.isFavorite"
-      @toggle-favorite="toggleFavorite" 
+      @toggle-favorite="() => toggleFavorite(team)" 
     />
   </ion-segment-content>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { getTimes } from '@/api/services/timeService';
 import TeamCard from '@/components/cards/TeamCard.vue';
+import { Time } from '@/api/interfaces/Time';
 
-// Dados reativos do time
-const team = ref({
-  name: "Santos",
-  logo: "src/assets/images/santos.png",
-  isFavorite: false
+const teams = ref<Time[]>([]);
+
+onMounted(async () => {
+  try {
+    const response = await getTimes();
+    // Supondo que o backend não traga o campo isFavorite, adicionamos manualmente:
+    teams.value = response.map(team => ({
+      ...team,
+      isFavorite: false // ou buscar de um storage/localStorage se quiser persistir
+    }));
+  } catch (error) {
+    console.error('Erro ao carregar os times:', error);
+  }
 });
 
-// Função para alternar o status de favorito
-const toggleFavorite = () => {
-  team.value.isFavorite = !team.value.isFavorite;
-  console.log(`Time ${team.value.name} agora é ${team.value.isFavorite ? 'favorito' : 'não favorito'}`);
+const toggleFavorite = (team: Time) => {
+  team.isFavorite = !team.isFavorite;
+  console.log(`Time ${team.name} agora é ${team.isFavorite ? 'favorito' : 'não favorito'}`);
 };
 </script>
