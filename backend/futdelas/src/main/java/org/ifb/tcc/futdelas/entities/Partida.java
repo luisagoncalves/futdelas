@@ -21,4 +21,9 @@ public class Partida {
         private String dataRealizacaoIso;
         @JsonProperty("_link")
         private String link;
+        private String placar;
+        @JsonProperty("placar_mandante")
+        private String placarMandante;
+        @JsonProperty("placar_visitante")
+        private String placarVisitante;
     }

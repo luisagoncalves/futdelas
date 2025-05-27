@@ -6,5 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PartidaResponse {
-    private PartidasContainer partidas;
+    private CampeonatoResponse campeonato;
+    private PartidasResponse partidas;
 }

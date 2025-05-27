@@ -1,23 +1,14 @@
 <template>
   <ion-segment-content id="second">
-    <MatchCard
-      v-for="(match, index) in matches"
-      :key="index"
-      :title="match.date"
-      :homeTeamName="match.homeTeamName"
-      :homeTeamLogo="match.homeTeamLogo"
-      :awayTeamName="match.awayTeamName"
-      :awayTeamLogo="match.awayTeamLogo"
-      :matchDateTime="match.time"
-      :icon="shareSocial"
-      :placar="match.score"
-    />
+    <MatchCard v-for="(match, index) in matches" :key="index" :title="match.date" :homeTeamName="match.homeTeamName"
+      :homeTeamLogo="match.homeTeamLogo" :awayTeamName="match.awayTeamName" :awayTeamLogo="match.awayTeamLogo"
+      :matchDateTime="match.time" :icon="shareSocial" :placar="match.score" />
   </ion-segment-content>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { getPartidas } from '@/api/services/partidaService';
+import { getPartidasDetalhes } from '@/api/services/partidaService';
 import { shareSocial } from 'ionicons/icons';
 import MatchCard from '@/components/cards/MatchCard.vue';
 
@@ -32,31 +23,30 @@ const matches = ref<Array<{
 }>>([]);
 
 onMounted(async () => {
-  const response = await getPartidas();
-  const partidas = response.partidas.partidas;
+  const response = await getPartidasDetalhes();
 
-  for (const faseKey in partidas) {
-    const fase = partidas[faseKey];
+  const partidas = {
+    ...response.partidas,
+    primeira_fase: response.partidas['primeira-fase']
+  };
 
-    for (const chaveKey in fase) {
-      const confronto = fase[chaveKey];
+  const partidasPrimeiraFase = partidas.primeira_fase;
 
-      const processarConfronto = (jogo: any) => {
-        matches.value.push({
-          date: formatarDataAbreviada(jogo.data_realizacao),
-          homeTeamName: jogo.time_mandante.nome_popular,
-          homeTeamLogo: jogo.time_mandante.escudo,
-          awayTeamName: jogo.time_visitante.nome_popular,
-          awayTeamLogo: jogo.time_visitante.escudo,
-          time: jogo.hora_realizacao,
-          score: '0 X 0' 
-        });
-      };
-
-      if (confronto.ida) processarConfronto(confronto.ida);
-      if (confronto.volta) processarConfronto(confronto.volta);
+  const partidasFormatadas = Object.entries(partidasPrimeiraFase).flatMap(
+    ([rodada, partidasRodada]) => {
+      return partidasRodada.map((partida) => ({
+        date: formatarDataAbreviada(partida.data_realizacao),
+        homeTeamName: partida.time_mandante.nome_popular,
+        homeTeamLogo: partida.time_mandante.escudo,
+        awayTeamName: partida.time_visitante.nome_popular,
+        awayTeamLogo: partida.time_visitante.escudo,
+        time: partida.hora_realizacao,
+        score: partida.status === 'encerrado' ? `${partida.placar_mandante} - ${partida.placar_visitante}` : 'x'
+      }));
     }
-  }
+  );
+
+  matches.value = partidasFormatadas;
 });
 
 function formatarDataAbreviada(dataString: string): string {
@@ -72,3 +62,4 @@ function formatarDataAbreviada(dataString: string): string {
   return formatado;
 }
 </script>
+
