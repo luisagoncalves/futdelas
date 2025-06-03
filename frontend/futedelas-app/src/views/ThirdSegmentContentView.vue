@@ -5,8 +5,6 @@
       :key="team.time_id"
       :team-name="team.nome_popular" 
       :team-logo="team.escudo" 
-      :is-initially-favorite="team.isFavorite"
-      @toggle-favorite="() => toggleFavorite(team)" 
     />
   </ion-segment-content>
 </template>
@@ -31,9 +29,4 @@ onMounted(async () => {
     console.error('Erro ao carregar os times:', error);
   }
 });
-
-const toggleFavorite = (team: Time) => {
-  team.isFavorite = !team.isFavorite;
-  console.log(`Time ${team.name} agora é ${team.isFavorite ? 'favorito' : 'não favorito'}`);
-};
 </script>

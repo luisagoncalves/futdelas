@@ -6,3 +6,15 @@ export async function getPartidasDetalhes(): Promise<PartidaResponse> {
   const response = await api.get('/partida');
   return response.data;
 }
+
+export async function buscarImagemPartida(id: number) {
+    try {
+      const response = await api.get(`partida/${id}/image`, {
+        responseType: 'blob' // Importante para receber a imagem
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao obter imagem da partida:', error);
+      throw error;
+    }
+  }

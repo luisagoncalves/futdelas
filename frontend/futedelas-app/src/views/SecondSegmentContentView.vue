@@ -2,7 +2,8 @@
   <ion-segment-content id="second">
     <MatchCard v-for="(match, index) in matches" :key="index" :title="match.date" :homeTeamName="match.homeTeamName"
       :homeTeamLogo="match.homeTeamLogo" :awayTeamName="match.awayTeamName" :awayTeamLogo="match.awayTeamLogo"
-      :matchDateTime="match.time" :icon="shareSocial" :placar="match.score" />
+      :matchDateTime="match.time" :icon="shareSocial" :placar="match.score" 
+      :matchId="match.id"  />
   </ion-segment-content>
 </template>
 
@@ -20,6 +21,7 @@ const matches = ref<Array<{
   awayTeamLogo: string;
   time: string;
   score: string;
+  id: number;
 }>>([]);
 
 onMounted(async () => {
@@ -35,6 +37,7 @@ onMounted(async () => {
   const partidasFormatadas = Object.entries(partidasPrimeiraFase).flatMap(
     ([rodada, partidasRodada]) => {
       return partidasRodada.map((partida) => ({
+        id: partida.partida_id,
         date: formatarDataAbreviada(partida.data_realizacao),
         homeTeamName: partida.time_mandante.nome_popular,
         homeTeamLogo: partida.time_mandante.escudo,

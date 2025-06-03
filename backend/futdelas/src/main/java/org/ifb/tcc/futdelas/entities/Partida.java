@@ -23,7 +23,7 @@ public class Partida {
         private String link;
         private String placar;
         @JsonProperty("placar_mandante")
-        private String placarMandante;
+        private Long placarMandante;
         @JsonProperty("placar_visitante")
-        private String placarVisitante;
+        private Long placarVisitante;
     }
