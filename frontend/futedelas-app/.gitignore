@@ -30,3 +30,26 @@ npm-debug.log*
 /platforms
 /plugins
 /www
+
+# Arquivos de ambiente
+.env                
+.env.local         
+.env.*              
+!.env.example       
+
+# Arquivos específicos do Firebase
+serviceAccountKey.json
+firebase-config.json
+
+# Dependências
+node_modules/
+dist/
+
+# Configurações específicas
+.firebase/
+firebase-debug.log
+capacitor.config.ts
+
+# Ambiente de desenvolvimento
+.DS_Store
+Thumbs.db

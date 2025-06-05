@@ -1,7 +1,5 @@
 package org.ifb.tcc.futdelas.controllers;
 
-import java.util.concurrent.CompletableFuture;
-
 import org.ifb.tcc.futdelas.dtos.PartidaResponse;
 import org.ifb.tcc.futdelas.entities.Partida;
 import org.ifb.tcc.futdelas.services.PartidaImageService;

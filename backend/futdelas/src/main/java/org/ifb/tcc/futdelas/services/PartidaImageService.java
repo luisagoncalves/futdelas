@@ -2,7 +2,6 @@ package org.ifb.tcc.futdelas.services;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
-import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
