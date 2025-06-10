@@ -8,6 +8,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.ifb.tcc.futdelas.client.ApiFutebolClient;
 import org.ifb.tcc.futdelas.dtos.PartidaResponse;
 import org.ifb.tcc.futdelas.entities.Partida;
+import org.ifb.tcc.futdelas.dtos.PartidaTimeFavoritoResponse;
 
 @ApplicationScoped
 public class PartidaService {
@@ -27,5 +28,10 @@ public class PartidaService {
     public Partida buscarPartidaPorId(Long id) {
         String authorizationHeader = "Bearer " + token;
         return apiFutebolClient.buscarPartidaPorId(authorizationHeader, id);
+    }
+
+    public PartidaTimeFavoritoResponse buscarPartidasPorTime (Integer timeId) {
+        String authorizationHeader = "Bearer " + token;
+        return apiFutebolClient.buscarPartidasPorTimeId(authorizationHeader, timeId);
     }
 }

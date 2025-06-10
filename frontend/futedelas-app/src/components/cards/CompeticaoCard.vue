@@ -5,7 +5,18 @@
     </ion-card-header>
 
     <ion-card-content>
-      <ion-grid>
+      <div v-if="loading" class="loading-container">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Carregando informações...</p>
+      </div>
+
+      <div v-else-if="error" class="error-container">
+        <ion-icon :icon="warning" color="danger"></ion-icon>
+        <p>Erro ao carregar informações</p>
+        <ion-button @click="buscarListaClassificacao">Tentar novamente</ion-button>
+      </div>
+
+      <ion-grid v-else>
         <ion-row class="ion-justify-content-center ion-align-items-center">
           <ion-col class="ion-text-center">
             <ion-row class="ion-justify-content-center ion-align-items-center">
@@ -34,11 +45,43 @@
 import { getCampeonato } from '@/api/services/campeonatoService';
 import { Campeonato } from '@/api/interfaces/Campeonato';
 import { ref, onMounted } from 'vue';
+import { warning } from 'ionicons/icons';
 
 const campeonato = ref(new Campeonato());
+const loading = ref(false);
+const error = ref(false);
 
-onMounted(async () => {
-  campeonato.value = await getCampeonato();
+const buscarCampeonato = async () => {
+  loading.value = true;
+  error.value = false;
+  try {
+    campeonato.value = await getCampeonato();
+  } catch (e) {
+    console.error('Erro ao buscar campeonato:', e);
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  buscarCampeonato();
 });
 </script>
+
+<style scoped>
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  gap: 12px;
+}
+
+.error-container ion-icon {
+  font-size: 48px;
+}
+</style>
  

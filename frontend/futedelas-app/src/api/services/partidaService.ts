@@ -10,7 +10,7 @@ export async function getPartidasDetalhes(): Promise<PartidaResponse> {
 export async function buscarImagemPartida(id: number) {
     try {
       const response = await api.get(`partida/${id}/image`, {
-        responseType: 'blob' // Importante para receber a imagem
+        responseType: 'blob'
       });
       return response.data;
     } catch (error) {

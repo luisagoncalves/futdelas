@@ -11,6 +11,7 @@ import org.ifb.tcc.futdelas.dtos.CampeonatoResponse;
 import org.ifb.tcc.futdelas.dtos.ClassificacaoResponse;
 import org.ifb.tcc.futdelas.dtos.PartidaResponse;
 import org.ifb.tcc.futdelas.entities.Partida;
+import org.ifb.tcc.futdelas.dtos.PartidaTimeFavoritoResponse;
 
 import java.util.List;
 
@@ -32,4 +33,9 @@ public interface ApiFutebolClient {
     @GET
     @Path("/partidas/{id}")
     Partida buscarPartidaPorId(@HeaderParam("Authorization") String token, @PathParam("id") Long id);
+
+    @GET
+    @Path("/times/{id}/partidas/proximas")
+    PartidaTimeFavoritoResponse buscarPartidasPorTimeId(@HeaderParam("Authorization") String token, @PathParam("id") Integer timeId);
+
 }

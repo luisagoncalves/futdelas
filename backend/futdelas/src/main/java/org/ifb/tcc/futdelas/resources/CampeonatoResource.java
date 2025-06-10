@@ -1,4 +1,4 @@
-package org.ifb.tcc.futdelas.controllers;
+package org.ifb.tcc.futdelas.resources;
 
 import org.ifb.tcc.futdelas.dtos.CampeonatoResponse;
 import org.ifb.tcc.futdelas.services.CampeonatoService;
@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.MediaType;
 
 @Path("/campeonato")
 @Produces(MediaType.APPLICATION_JSON)
-public class CampeonatoController {
+public class CampeonatoResource {
 
     @Inject
     CampeonatoService service;

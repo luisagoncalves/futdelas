@@ -8,13 +8,13 @@
       <!-- Estado de carregamento -->
       <div v-if="loading" class="loading-container">
         <ion-spinner name="crescent"></ion-spinner>
-        <p>Carregando classificação...</p>
+        <p>Carregando informações...</p>
       </div>
 
       <!-- Estado de erro -->
       <div v-else-if="error" class="error-container">
         <ion-icon :icon="warning" color="danger"></ion-icon>
-        <p>Erro ao carregar a classificação</p>
+        <p>Erro ao carregar informações</p>
         <ion-button @click="buscarListaClassificacao">Tentar novamente</ion-button>
       </div>
 

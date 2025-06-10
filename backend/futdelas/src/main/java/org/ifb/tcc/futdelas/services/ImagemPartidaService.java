@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 
 @ApplicationScoped
-public class PartidaImageService {
+public class ImagemPartidaService {
 
     private static final int IMAGE_WIDTH = 800;
     private static final int IMAGE_HEIGHT = 400;

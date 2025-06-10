@@ -1,4 +1,4 @@
-package org.ifb.tcc.futdelas.controllers;
+package org.ifb.tcc.futdelas.resources;
 
 import org.ifb.tcc.futdelas.dtos.ClassificacaoResponse;
 import org.ifb.tcc.futdelas.services.ClassificacaoService;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @Path("/classificacao")
 @Produces(MediaType.APPLICATION_JSON)
-public class ClassificacaoController {
+public class ClassificacaoResource {
 
     @Inject
     ClassificacaoService service;

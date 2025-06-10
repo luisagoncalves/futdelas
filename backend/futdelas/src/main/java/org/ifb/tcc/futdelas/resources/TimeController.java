@@ -1,4 +1,4 @@
-package org.ifb.tcc.futdelas.controllers;
+package org.ifb.tcc.futdelas.resources;
 
 import java.util.List;
 

@@ -9,13 +9,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 @ApplicationScoped
-public class NotificationService {
+public class NotificacaoService {
 
     @PostConstruct
-    public void initialize() {
+    public void inicializar() {
         if (FirebaseApp.getApps().isEmpty()) {
             try {
                 InputStream serviceAccount = getClass()
@@ -26,43 +25,28 @@ public class NotificationService {
                     throw new RuntimeException("Arquivo serviceAccountKey.json não encontrado!");
                 }
 
-                FirebaseOptions options = FirebaseOptions.builder()
+                FirebaseOptions opcoes = FirebaseOptions.builder()
                         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                         .build();
 
-                FirebaseApp.initializeApp(options);
-                System.out.println("Firebase inicializado com sucesso.");
+                FirebaseApp.initializeApp(opcoes);
             } catch (IOException e) {
                 throw new RuntimeException("Erro ao inicializar Firebase: " + e.getMessage(), e);
             }
         }
     }
 
-    public String sendNotificationToDevice(String deviceToken, String title, String body)
+    public String enviarNotificacaoDispositivo(String dispositivoToken, String titulo, String corpo)
             throws FirebaseMessagingException {
 
-        Message message = Message.builder()
-                .setToken(deviceToken)
+        Message notificacao = Message.builder()
+                .setToken(dispositivoToken)
                 .setNotification(Notification.builder()
-                        .setTitle(title)
-                        .setBody(body)
+                        .setTitle(titulo)
+                        .setBody(corpo)
                         .build())
                 .build();
 
-        return FirebaseMessaging.getInstance().send(message);
-    }
-
-    public BatchResponse sendNotificationToDevices(List<String> deviceTokens, String title, String body)
-            throws FirebaseMessagingException {
-
-        MulticastMessage message = MulticastMessage.builder()
-                .addAllTokens(deviceTokens)
-                .setNotification(Notification.builder()
-                        .setTitle(title)
-                        .setBody(body)
-                        .build())
-                .build();
-
-        return FirebaseMessaging.getInstance().sendEachForMulticast(message);
+        return FirebaseMessaging.getInstance().send(notificacao);
     }
 }
