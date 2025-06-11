@@ -1,12 +1,21 @@
 import api from "../http";
-import { NotificationRequest } from "../interfaces/Notificacao";
+import { UsuarioNotificacao } from "../interfaces/UsuarioNotificacao";
 
-export async function registerTokenOnBackend(request: NotificationRequest): Promise<any> {
+export async function registrarNotificacao(usuarioNotificacao: UsuarioNotificacao): Promise<any> {
   try {
-    const response = await api.post('/notifications/device', request);
+    const response = await api.post('/notificacao/registrar', usuarioNotificacao);
     return response;
   } catch (error) {
-    console.error('Erro ao registrar token no backend:', error);
+    throw error;
+  }
+}
+
+
+export async function atualizarNotificacao(usuarioNotificacao: UsuarioNotificacao): Promise<any> {
+  try {
+    const response = await api.post('/notificacao/atualizar', usuarioNotificacao);
+    return response;
+  } catch (error) {
     throw error;
   }
 }

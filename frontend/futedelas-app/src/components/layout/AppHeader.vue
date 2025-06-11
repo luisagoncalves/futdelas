@@ -1,9 +1,8 @@
 <template>
-  <ion-header>
     <ion-toolbar>
       <ion-buttons slot="secondary">
         <ion-button id="open-notification-popover">
-          <ion-icon :icon="settingsSharp"></ion-icon>
+          <ion-icon :icon="settingsSharp" />
         </ion-button>
 
         <ion-popover trigger="open-notification-popover" trigger-action="click" :is-open="showPopover"
@@ -27,7 +26,6 @@
       </ion-buttons>
       <ion-title>FutDelas</ion-title>
     </ion-toolbar>
-  </ion-header>
 </template>
 
 <script setup lang="ts">
@@ -48,10 +46,10 @@ import {
   toastController
 } from '@ionic/vue';
 import { notifications, settingsSharp } from 'ionicons/icons';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
-import { app } from '@/firebase/config';
+import { UsuarioNotificacao } from '@/api/interfaces/UsuarioNotificacao';
+import { registrarNotificacao, atualizarNotificacao } from '@/api/services/notificacaoService';
+import { solicitarPermissaoNotificacoes } from '@/firebase/config';
 
-const messaging = getMessaging(app);
 const showPopover = ref(false);
 const notificationsEnabled = ref(false);
 const unreadCount = ref(0);
@@ -60,19 +58,18 @@ const handleNotificationToggle = async (event: CustomEvent) => {
   const isEnabled = event.detail.checked;
   
   if (isEnabled) {
-    await enableNotifications();
+    await ativarNotificacao();
   } else {
-    await disableNotifications();
+    await desativarNotificacao();
   }
 };
 
-const enableNotifications = async () => {
+const ativarNotificacao = async () => {
   try {
     const permission = await Notification.requestPermission();
     
     if (permission === 'granted') {
-      await getFCMToken();
-      setupForegroundMessageHandler();
+      const dispositivoToken = await solicitarPermissaoNotificacoes();
       notificationsEnabled.value = true;
       await showToast('Notificações ativadas com sucesso');
     } else {
@@ -80,48 +77,14 @@ const enableNotifications = async () => {
       await showToast('Permissão para notificações negada');
     }
   } catch (error) {
-    console.error('Erro ao ativar notificações:', error);
     notificationsEnabled.value = false;
     await showToast('Erro ao ativar notificações');
   }
 };
 
-const disableNotifications = async () => {
+const desativarNotificacao = async () => {
   notificationsEnabled.value = false;
   await showToast('Notificações desativadas');
-};
-
-const getFCMToken = async () => {
-  try {
-    const currentToken = await getToken(messaging, {
-      vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY
-    });
-    
-    if (currentToken) {
-      console.log('Token FCM:', currentToken);
-      return currentToken;
-    }
-    throw new Error('Não foi possível obter o token FCM');
-  } catch (error) {
-    throw error;
-  }
-};
-
-const setupForegroundMessageHandler = () => {
-  onMessage(messaging, (payload) => {
-    if (!notificationsEnabled.value) return;
-    
-    unreadCount.value += 1;
-    showNotification(payload.notification);
-  });
-};
-
-const showNotification = (notification: { title?: string; body?: string } = {}) => {
-  if (Notification.permission === 'granted' && notification.title) {
-    new Notification(notification.title, {
-      body: notification.body,
-    });
-  }
 };
 
 const showToast = async (message: string) => {
@@ -132,14 +95,6 @@ const showToast = async (message: string) => {
   });
   await toast.present();
 };
-
-onMounted(async () => {
-  if (Notification.permission === 'granted') {
-    notificationsEnabled.value = true;
-    await getFCMToken();
-    setupForegroundMessageHandler();
-  }
-});
 </script>
 
 <style scoped>
