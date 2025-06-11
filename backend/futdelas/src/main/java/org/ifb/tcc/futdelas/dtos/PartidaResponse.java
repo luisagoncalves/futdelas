@@ -1,9 +1,11 @@
-package org.ifb.tcc.futdelas.interfaces.dto.response.partida;
+package org.ifb.tcc.futdelas.dtos;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class PartidaResponse {
     private CampeonatoResponse campeonato;
-    private FasesCampeonatoResponse fases;
+    private PartidasResponse partidas;
 }

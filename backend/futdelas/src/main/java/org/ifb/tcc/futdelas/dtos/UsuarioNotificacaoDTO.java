@@ -1,11 +1,11 @@
-package org.ifb.tcc.futdelas.interfaces.dto.request.notificacao;
+package org.ifb.tcc.futdelas.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class UsuarioNotificacaoRequest {
+public class UsuarioNotificacaoDTO {
     private String deviceToken;
     private Integer timeId;
     private boolean ativo;

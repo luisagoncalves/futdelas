@@ -1,4 +1,4 @@
-package org.ifb.tcc.futdelas.interfaces.dto.response.campeonato;
+package org.ifb.tcc.futdelas.dtos;
 
 import org.ifb.tcc.futdelas.entities.Edicao;
 import org.ifb.tcc.futdelas.entities.Fase;
@@ -6,21 +6,23 @@ import org.ifb.tcc.futdelas.entities.Rodada;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class CampeonatoResponse {
-    private String nome;
-    private String slug;
+    public String nome;
+    public String slug;
     @JsonProperty("nome_popular")
-    private String nomePopular;
+    public String nomePopular;
     @JsonProperty("edicao_atual")
-    private Edicao edicaoAtual;
+    public Edicao edicaoAtual;
     @JsonProperty("fase_atual")
-    private Fase faseAtual;
+    public Fase faseAtual;
     @JsonProperty("rodada_atual")
-    private Rodada rodadaAtual;
-    private String logo;
-    private String status;
-    private String tipo;
-    private String regiao;
+    public Rodada rodadaAtual;
+    public String logo;
+    public String status;
+    public String tipo;
+    public String regiao;
 }

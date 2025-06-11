@@ -1,4 +1,4 @@
-package org.ifb.tcc.futdelas.domain.entities;
+package org.ifb.tcc.futdelas.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;

@@ -17,17 +17,8 @@ public class CampeonatoService {
     @ConfigProperty(name = "api-futebol.token")
     String token;
 
-    private String obterCabecalhoAutorizacao() {
-        return "Bearer " + token;
-    }
-
     public CampeonatoResponse buscarInfosCampeonato() {
-        try {
-            return apiFutebolClient.buscarCampeonatoPorId(obterCabecalhoAutorizacao());
-        } catch (Exception e) {
-            String mensagemErro = String.format("[CampeonatoService:buscarInfosCampeonato] Erro ao buscar informações do campeonato: %s", e.getMessage());
-            LOGGER.error(mensagemErro, e);
-            throw new RuntimeException("Falha ao consultar dados do campeonato. Tente novamente mais tarde.", e);
-        }
+        String authorizationHeader = "Bearer " + token;
+        return apiFutebolClient.buscarCampeonatoPorId(authorizationHeader);
     }
 }

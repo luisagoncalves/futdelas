@@ -2,6 +2,7 @@ package org.ifb.tcc.futdelas.services;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.ifb.tcc.futdelas.client.ApiFutebolClient;
@@ -19,19 +20,18 @@ public class PartidaService {
     @ConfigProperty(name = "api-futebol.token")
     String token;
 
-    private String obterCabecalhoAutorizacao() {
-        return "Bearer " + token;
-    }
-
     public PartidaResponse buscarPartidas() {
-        return apiFutebolClient.buscarPartidasPorCampeonatoId(obterCabecalhoAutorizacao());
+        String authorizationHeader = "Bearer " + token;
+        return apiFutebolClient.buscarPartidasPorCampeonatoId(authorizationHeader);
     }
 
     public Partida buscarPartidaPorId(Long id) {
-        return apiFutebolClient.buscarPartidaPorId(obterCabecalhoAutorizacao(), id);
+        String authorizationHeader = "Bearer " + token;
+        return apiFutebolClient.buscarPartidaPorId(authorizationHeader, id);
     }
 
-    public PartidaTimeFavoritoResponse buscarPartidasPorTime(Integer timeId) {
-        return apiFutebolClient.buscarPartidasPorTimeId(obterCabecalhoAutorizacao(), timeId);
+    public PartidaTimeFavoritoResponse buscarPartidasPorTime (Integer timeId) {
+        String authorizationHeader = "Bearer " + token;
+        return apiFutebolClient.buscarPartidasPorTimeId(authorizationHeader, timeId);
     }
 }
