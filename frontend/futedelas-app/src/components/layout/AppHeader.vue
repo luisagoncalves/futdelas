@@ -1,37 +1,46 @@
 <template>
-    <ion-toolbar>
-      <ion-buttons slot="secondary">
-        <ion-button id="open-notification-popover">
-          <ion-icon :icon="settingsSharp" />
-        </ion-button>
+  <ion-toolbar>
+    <ion-buttons slot="secondary">
+      <!-- Botão de Configurações com Popover -->
+      <ion-button id="abrir-popover-config" aria-label="Configurações">
+        <ion-icon :icon="settingsSharp" />
+      </ion-button>
 
-        <ion-popover trigger="open-notification-popover" trigger-action="click" :is-open="showPopover"
-          @didDismiss="showPopover = false">
-          <ion-content class="ion-padding">
-            <ion-item lines="none">
-              <ion-toggle 
-                helper-text="Receba notificações das próximas partidas"
-                justify="space-between"
-                :checked="notificationsEnabled" 
-                @ionChange="handleNotificationToggle"
-              >Notificações</ion-toggle>
-            </ion-item>
-          </ion-content>
-        </ion-popover>
-        
-        <ion-button>
-          <ion-icon :icon="notifications"></ion-icon>
-          <ion-badge v-if="unreadCount > 0" color="danger">{{ unreadCount }}</ion-badge>
-        </ion-button>
-      </ion-buttons>
-      <ion-title>FutDelas</ion-title>
-    </ion-toolbar>
+      <ion-popover 
+        trigger="abrir-popover-config" 
+        trigger-action="click" 
+        :is-open="mostrarPopover"
+        @didDismiss="mostrarPopover = false"
+        class="popover-config"
+      >
+        <ion-content class="conteudo-popover">
+          <ion-item lines="none">
+            <ion-toggle 
+              justify="space-between"
+              :checked="notificacoesAtivas" 
+              @ionChange="alternarNotificacoes"
+              helper-text="Receba notificações das próximas partidas"
+            >Notificações</ion-toggle>
+          </ion-item>
+        </ion-content>
+      </ion-popover>
+      
+      <!-- Botão de Notificações -->
+      <ion-button aria-label="Notificações">
+        <ion-icon :icon="notifications" />
+        <ion-badge v-if="contadorNaoLidas > 0" color="danger" class="badge-notificacao">
+          {{ contadorNaoLidas }}
+        </ion-badge>
+      </ion-button>
+    </ion-buttons>
+    
+    <ion-title class="titulo-app">FutDelas</ion-title>
+  </ion-toolbar>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import {
-  IonHeader,
   IonToolbar,
   IonTitle,
   IonButtons,
@@ -41,65 +50,110 @@ import {
   IonPopover,
   IonContent,
   IonItem,
-  IonLabel,
   IonToggle,
+  IonText,
   toastController
 } from '@ionic/vue';
 import { notifications, settingsSharp } from 'ionicons/icons';
-import { UsuarioNotificacao } from '@/api/interfaces/UsuarioNotificacao';
-import { registrarNotificacao, atualizarNotificacao } from '@/api/services/notificacaoService';
 import { solicitarPermissaoNotificacoes } from '@/firebase/config';
 
-const showPopover = ref(false);
-const notificationsEnabled = ref(false);
-const unreadCount = ref(0);
+const mostrarPopover = ref(false);
+const notificacoesAtivas = ref(false);
+const contadorNaoLidas = ref(0);
 
-const handleNotificationToggle = async (event: CustomEvent) => {
-  const isEnabled = event.detail.checked;
+const alternarNotificacoes = async (evento: CustomEvent) => {
+  const estaAtivo = evento.detail.checked;
   
-  if (isEnabled) {
-    await ativarNotificacao();
+  if (estaAtivo) {
+    await ativarNotificacoes();
   } else {
-    await desativarNotificacao();
+    await desativarNotificacoes();
   }
 };
 
-const ativarNotificacao = async () => {
+const ativarNotificacoes = async () => {
   try {
-    const permission = await Notification.requestPermission();
+    const permissao = await Notification.requestPermission();
     
-    if (permission === 'granted') {
-      const dispositivoToken = await solicitarPermissaoNotificacoes();
-      notificationsEnabled.value = true;
-      await showToast('Notificações ativadas com sucesso');
+    if (permissao === 'granted') {
+      await solicitarPermissaoNotificacoes();
+      notificacoesAtivas.value = true;
+      await mostrarToast('Notificações ativadas com sucesso');
     } else {
-      notificationsEnabled.value = false;
-      await showToast('Permissão para notificações negada');
+      notificacoesAtivas.value = false;
+      await mostrarToast('Permissão para notificações negada');
     }
-  } catch (error) {
-    notificationsEnabled.value = false;
-    await showToast('Erro ao ativar notificações');
+  } catch (erro) {
+    notificacoesAtivas.value = false;
+    await mostrarToast('Erro ao ativar notificações');
+    console.error('Erro ao ativar notificações:', erro);
   }
 };
 
-const desativarNotificacao = async () => {
-  notificationsEnabled.value = false;
-  await showToast('Notificações desativadas');
+const desativarNotificacoes = async () => {
+  notificacoesAtivas.value = false;
+  await mostrarToast('Notificações desativadas');
 };
 
-const showToast = async (message: string) => {
+const mostrarToast = async (mensagem: string) => {
   const toast = await toastController.create({
-    message,
+    message: mensagem,
     duration: 2000,
-    position: 'top'
+    position: 'top',
   });
   await toast.present();
 };
 </script>
 
 <style scoped>
-.timestamp {
-  font-size: 0.8rem;
+.titulo-app {
+  font-weight: bold;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+}
+
+.popover-config {
+  --backdrop-opacity: 0.4;
+}
+
+.conteudo-popover {
+  --background: var(--ion-color-light);
+  border-radius: 12px;
+}
+
+.rotulo-toggle {
+  display: flex;
+  flex-direction: column;
+}
+
+.texto-ajuda {
+  font-size: 0.75rem;
   color: var(--ion-color-medium);
+  margin-top: 4px;
+}
+
+.badge-notificacao {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 0.7rem;
+}
+
+ion-button {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --color: white;
+}
+
+ion-icon {
+  font-size: 1.4rem;
+}
+</style>
+
+<style>
+/* Estilo global para o popover (resolve o problema do fundo escuro) */
+ion-popover::part(backdrop) {
+  opacity: 0.4 !important;
+  background: var(--ion-color-dark);
 }
 </style>
