@@ -18,8 +18,11 @@ public class ClassificacaoService {
     @ConfigProperty(name = "api-futebol.token")
     String token;
 
+    private String obterCabecalhoAutorizacao() {
+        return "Bearer " + token;
+    }
+
     public List<ClassificacaoResponse> buscarClassificacao() {
-        String authorizationHeader = "Bearer " + token;
-        return apiFutebolClient.buscarClassificacaoPorCampeonatoId(authorizationHeader);
+        return apiFutebolClient.buscarClassificacaoPorCampeonatoId(obterCabecalhoAutorizacao());
     }
 }
