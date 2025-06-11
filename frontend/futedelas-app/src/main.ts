@@ -18,7 +18,25 @@ import '@ionic/vue/css/display.css';
 
 import './theme/variables.css';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 
+const auth = getAuth();
+
+signInAnonymously(auth)
+  .then(() => {
+    console.log('Login bem-sucedido')
+  })
+  .catch((error) => {
+    console.error("Erro na autenticação anônima:", error);
+  });
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    const uid = user.uid;
+  } else {
+    console.error("Usuário não logado");
+  }
+});
 const app = createApp(App)
   .use(IonicVue)
   .use(router);
