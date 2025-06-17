@@ -1,4 +1,4 @@
-package org.ifb.tcc.futdelas.dtos;
+package org.ifb.tcc.futdelas.dtos.request;
 
 import lombok.Getter;
 import lombok.Setter;

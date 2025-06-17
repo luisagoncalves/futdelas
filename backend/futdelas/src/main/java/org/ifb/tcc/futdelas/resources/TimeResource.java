@@ -15,7 +15,7 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/time")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class TimeController {
+public class TimeResource {
 
     @Inject
     TimeService service;

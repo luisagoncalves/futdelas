@@ -1,5 +1,5 @@
 <template>
-  <ion-card class="cartao-time" :class="{ 'time-favorito': timeFavorito }">
+  <ion-card class="cartao-time" :class="{ 'time-favorito': isFavorito }">
     <ion-card-content>
       <ion-row class="ion-align-items-center ion-justify-content-between">
         <ion-row class="ion-align-items-center">
@@ -13,31 +13,56 @@
           <ion-text class="nome-time">{{ nomeTime }}</ion-text>
         </ion-row>
 
-        <ion-icon
-          :icon="timeFavorito ? heart : heartOutline"
-          class="icone-favorito"
-          :color="timeFavorito ? 'danger' : 'medium'"
-          @click.stop="alternarFavorito"
-        ></ion-icon>
+        <ion-button 
+          shape="round" 
+          fill="clear"
+          :disabled="!isFavorito && temOutroFavorito"
+          @click="toggleFavorito()"
+          class="botao-favorito">
+          <ion-icon
+            slot="icon-only"
+            :icon="isFavorito ? heart : heartOutline"
+            :color="isFavorito ? 'danger' : 'medium'"
+          />
+        </ion-button>
       </ion-row>
     </ion-card-content>
   </ion-card>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { IonButton, IonIcon, IonCard, IonCardContent, IonRow, IonAvatar, IonImg, IonText } from '@ionic/vue';
 import { heart, heartOutline } from 'ionicons/icons'
 
 const props = defineProps({
-  nomeTime: String,
-  escudoTime: String,
-  isInitiallyFavorite: Boolean,
-})
+  nomeTime: {
+    type: String,
+    required: true
+  },
+  escudoTime: {
+    type: String,
+    required: true
+  },
+  timeId: {
+    type: Number,
+    required: true
+  },
+  isFavorito: {
+    type: Boolean,
+    default: false
+  },
+  temOutroFavorito: {
+    type: Boolean,
+    default: false
+  }
+});
 
-const timeFavorito = ref(props.isInitiallyFavorite)
+const emit = defineEmits(['toggleFavorito']);
 
-function alternarFavorito() {
-  timeFavorito.value = !timeFavorito.value
+function toggleFavorito() {
+  if (props.isFavorito || !props.temOutroFavorito) {
+    emit('toggleFavorito', props.timeId);
+  }
 }
 </script>
 
@@ -62,8 +87,8 @@ function alternarFavorito() {
 }
 
 .avatar-time {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   margin-right: 16px;
   background: #f5f5f5;
   display: flex;
@@ -74,7 +99,6 @@ function alternarFavorito() {
 .logo-time {
   width: 30px;
   height: 30px;
-  object-fit: contain;
 }
 
 .nome-time {
@@ -89,11 +113,32 @@ function alternarFavorito() {
   transition: transform 0.2s ease;
 }
 
-.icone-favorito:hover {
+.icone-favorito:hover:not(.desativado) {
   transform: scale(1.1);
 }
 
-.icone-favorito:active {
+.icone-favorito:active:not(.desativado) {
   transform: scale(0.95);
+}
+
+.icone-favorito.desativado {
+  pointer-events: none;
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.botao-favorito {
+  --color: inherit;
+  --color-activated: inherit;
+  --color-focused: inherit;
+  --ripple-color: transparent;
+}
+
+.botao-favorito ion-icon {
+  color: var(--ion-color-medium);
+}
+
+.botao-favorito ion-icon[color="danger"] {
+  color: var(--ion-color-danger);
 }
 </style>

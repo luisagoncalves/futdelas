@@ -86,7 +86,6 @@ const ativarNotificacoes = async () => {
   } catch (erro) {
     notificacoesAtivas.value = false;
     await mostrarToast('Erro ao ativar notificações');
-    console.error('Erro ao ativar notificações:', erro);
   }
 };
 

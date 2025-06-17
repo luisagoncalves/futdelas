@@ -20,7 +20,7 @@ public class TimeService {
     ApiFutebolClient apiFutebolClient;
 
     @ConfigProperty(name = "api-futebol.token")
-    String token;
+    private String token;
 
     public List<Time> buscarTimesCampeonato() {
         String authorizationHeader = "Bearer " + token;

@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router';
+import { createPinia } from 'pinia'
 
 import { IonicVue } from '@ionic/vue';
 import '@ionic/vue/css/core.css';
@@ -22,24 +23,34 @@ import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 
 const auth = getAuth();
 
-signInAnonymously(auth)
-  .then(() => {
-    console.log('Login bem-sucedido')
-  })
-  .catch((error) => {
-    console.error("Erro na autenticação anônima:", error);
-  });
+function initAnonymousAuth() {
+  signInAnonymously(auth)
+    .then(() => {
+      console.log('Login anônimo bem-sucedido');
+    })
+    .catch((error) => {
+      console.error("Erro na autenticação anônima:", error);
+    });
+}
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
     const uid = user.uid;
+    localStorage.setItem('anonymousUserId', uid);
+    console.log('UID do usuário anônimo:', uid);
   } else {
-    console.error("Usuário não logado");
+    console.log('Usuário não autenticado');
+    initAnonymousAuth();
   }
 });
+
+initAnonymousAuth();
+const pinia = createPinia();
+
 const app = createApp(App)
   .use(IonicVue)
-  .use(router);
+  .use(router)
+  .use(pinia);
 
 defineCustomElements(window);
 
