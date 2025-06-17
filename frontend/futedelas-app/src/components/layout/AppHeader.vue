@@ -56,6 +56,8 @@ import {
 } from '@ionic/vue';
 import { notifications, settingsSharp } from 'ionicons/icons';
 import { solicitarPermissaoNotificacoes } from '@/firebase/config';
+import { buscarTimeFavorito } from '@/api/services/timeFavoritoService';
+import { getCurrentUserId } from '@/api/services/auth';
 
 const mostrarPopover = ref(false);
 const notificacoesAtivas = ref(false);
@@ -71,14 +73,21 @@ const alternarNotificacoes = async (evento: CustomEvent) => {
   }
 };
 
+const userId = getCurrentUserId();
 const ativarNotificacoes = async () => {
   try {
     const permissao = await Notification.requestPermission();
     
     if (permissao === 'granted') {
-      await solicitarPermissaoNotificacoes();
-      notificacoesAtivas.value = true;
-      await mostrarToast('Notificações ativadas com sucesso');
+      const timeFavorito = await buscarTimeFavorito(userId);
+      if (timeFavorito) {
+        await solicitarPermissaoNotificacoes();
+        notificacoesAtivas.value = true;
+        await mostrarToast('Notificações ativadas com sucesso');
+      } else {
+        notificacoesAtivas.value = false;
+        await mostrarToast('Escolha um time favorito para receber notificações');
+      }
     } else {
       notificacoesAtivas.value = false;
       await mostrarToast('Permissão para notificações negada');
